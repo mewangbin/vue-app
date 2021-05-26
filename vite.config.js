@@ -6,6 +6,12 @@ import viteCompression from 'vite-plugin-compression'
 
 export default defineConfig(({ command }) => {
   return {
+    server: {
+      hostname: '0.0.0.0',
+      port: '3000',
+      open: true,
+      https: false
+    },
     plugins: [
       vue(),
       injectHtml({
