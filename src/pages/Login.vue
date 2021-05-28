@@ -6,10 +6,10 @@
           <el-input type="text" v-model="form.account" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="pass">
-          <el-input type="password" v-model="form.pass" autocomplete="off"></el-input>
+          <el-input type="password" v-model="form.password" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="success" @click="submitForm()">提交</el-button>
+          <el-button type="success" @click="submitForm()" v-preventRepeatClick>提交</el-button>
           <el-button @click="resetForm()">重置</el-button>
         </el-form-item>
       </el-form>
@@ -20,35 +20,25 @@
 
 <script setup>
   import { reactive, ref } from '@vue/reactivity'
-  import { useRouter } from 'vue-router'
-  import { post } from '../utils/http'
+  import { userApi } from '../api'
 
-  const router = useRouter()
   const loginForm = ref(null)
   const form = reactive({
     account: '',
-    pass: ''
+    password: ''
   })
-  const submitForm = () => {
-    console.log('form:', form)
 
-    post({
-      url: '/doPost',
-      data: {
-        a: 1,
-        b: 2
-      },
-      options: {
-        timeout: 451122
-      }
-    })
-      .then((response) => {
-        console.log(response)
+  const submitForm = () => {
+    userApi
+      .login(form)
+      .then((data) => {
+        console.log('loginResult:', data)
       })
-      .catch((error) => {
-        console.log(error)
+      .catch((e) => {
+        console.log('e:', e)
       })
   }
+
   const resetForm = () => {
     loginForm.value.resetFields()
   }

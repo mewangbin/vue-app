@@ -1,6 +1,7 @@
 module.exports = {
   eslintIntegration: true,
   vueIndentScriptAndStyle: true,
+  htmlWhitespaceSensitivity: 'strict',
   printWidth: 120,
   tabWidth: 2,
   useTabs: false,
@@ -15,6 +16,5 @@ module.exports = {
   insertPragma: false,
   requirePragma: false,
   proseWrap: 'never',
-  endOfLine: 'lf',
-  htmlWhitespaceSensitivity: 'strict'
+  endOfLine: 'lf'
 }

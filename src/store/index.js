@@ -1,36 +1,12 @@
 import { createStore } from 'vuex'
+import httpStore from './modules/httpStore'
+import userStore from './modules/userStore'
 
 const store = createStore({
-  namespaced: true,
+  strict: process.env.NODE_ENV !== 'production',
   modules: {
-    http: {
-      namespaced: true,
-      state: () => ({
-        requests: []
-      }),
-      getters: {
-        existed: (state) => (url) => {
-          return state.requests.findIndex((item) => item.url === url) !== -1
-        }
-      },
-      mutations: {
-        push(state, request) {
-          state.requests.push(request)
-        },
-        remove(state, url) {
-          let index = state.requests.findIndex((item) => item.url === url)
-          if (index !== -1) {
-            state.requests.splice(index, 1)
-          }
-        },
-        clear(state) {
-          state.requests.forEach((item) => {
-            item.cancel('cancel same request')
-          })
-          state.requests = []
-        }
-      }
-    }
+    httpStore: httpStore,
+    userStore: userStore
   }
 })
 

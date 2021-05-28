@@ -3,14 +3,15 @@ module.exports = {
   env: {
     node: true,
     browser: true,
-    es2015: true
+    es6: true
   },
-  extends: ['eslint:recommended', 'plugin:vue/vue3-strongly-recommended', 'plugin:prettier/recommended'],
+  extends: ['plugin:vue/vue3-strongly-recommended', 'plugin:prettier/recommended'],
+  parser: 'vue-eslint-parser',
   parserOptions: {
-    ecmaVersion: 2015,
+    ecmaVersion: 2020,
     sourceType: 'module'
   },
-  plugins: ['vue', 'prettier', 'html'],
+  plugins: ['vue', 'prettier'],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'

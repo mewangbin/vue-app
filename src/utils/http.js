@@ -1,7 +1,14 @@
 import axios from 'axios'
 import qs from 'qs'
 import dayjs from 'dayjs'
+import md5 from 'js-md5'
 import store from '../store'
+import { TOKEN_KEY } from '../constants'
+import { ElMessage } from 'element-plus'
+
+const hashKey = (config) => {
+  return md5([config.method, config.url, qs.stringify(config.params), qs.stringify(config.data)].join('&'))
+}
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_API_URL
 axios.defaults.timeout = 30000
@@ -15,25 +22,23 @@ axios.defaults.headers = {
 
 axios.interceptors.request.use(
   (config) => {
-    config.cancelToken = new axios.CancelToken((cancel) => {
-      let tmpRequest = { url: config.url, cancel: cancel }
-      let existed = store.getters['http/existed'](tmpRequest.url)
-      if (existed) {
-        tmpRequest.cancel('存在重复请求，请求被中断...')
-        return
-      }
-      if (tmpRequest) {
-        store.commit('http/push', tmpRequest)
-      }
-    })
-    if (config.method === 'get') {
-      config.paramsSerializer = function (params) {
-        return qs.stringify(params, {
-          arrayFormat: 'repeat',
-          serializeDate: (date) => dayjs(date).format('YYYY-MM-DD HH:mm:ss')
-        })
-      }
+    const key = hashKey(config)
+    let existed = store.getters['httpStore/get'](key)
+    if (existed) {
+      existed.cancel('操作太频繁，请稍后再试...')
+      store.commit('httpStore/remove', key)
     }
+    config.cancelToken = new axios.CancelToken((cancelToken) => {
+      store.commit('httpStore/push', { key: key, cancel: cancelToken })
+    })
+    config.paramsSerializer = function (params) {
+      return qs.stringify(params, {
+        arrayFormat: 'repeat',
+        serializeDate: (date) => dayjs(date).format('YYYY-MM-DD HH:mm:ss')
+      })
+    }
+    let token = store.getters['userStore/getToken']
+    token && (config.headers[TOKEN_KEY] = token)
     return config
   },
   (error) => {
@@ -44,9 +49,34 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => {
     setTimeout(() => {
-      store.commit('http/remove', response.config.url)
+      store.commit('httpStore/remove', hashKey(response.config))
     }, 1000)
-    return response.data
+
+    if (!response.data.code) {
+      return response.data
+    }
+    const {
+      data: { code, message, data }
+    } = response
+
+    if (code === '0') {
+      const token = response.headers[TOKEN_KEY]
+      if (token) {
+        store.commit('userStore/setToken', token)
+      }
+      return data
+    }
+    if (code === '10001') {
+      if (router.currentRoute.path === '/login') {
+        return
+      }
+      store.dispatch('userStore/reset')
+      router.replace({
+        path: '/login'
+      })
+      ElMessage.error('token认证失败或token过期,请重新登录')
+    }
+    return Promise.reject(response.data)
   },
   (error) => {
     if (axios.isCancel(error)) {
@@ -54,13 +84,17 @@ axios.interceptors.response.use(
     }
     if (error.response && error.response.status) {
       setTimeout(() => {
-        store.commit('http/remove', error.response.config.url)
+        store.commit('httpStore/remove', hashKey(error.response.config))
       }, 1000)
       return Promise.reject(error.response)
     }
     return Promise.reject(error.message)
   }
 )
+
+export function promiseWrap(promise) {
+  return promise.then((data) => [data, null]).catch((err) => [null, err])
+}
 
 export function get({ url = '', params = {}, options = {} } = {}) {
   return axios.get(url, Object.assign({ params: params }, options))

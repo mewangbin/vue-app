@@ -3,9 +3,18 @@ import vue from '@vitejs/plugin-vue'
 import { injectHtml } from 'vite-plugin-html'
 import { viteMockServe } from 'vite-plugin-mock'
 import viteCompression from 'vite-plugin-compression'
+import path from 'path'
 
 export default defineConfig(({ command }) => {
   return {
+    resolve: {
+      alias: [
+        {
+          find: '@',
+          replacement: path.resolve(__dirname, 'src')
+        }
+      ]
+    },
     server: {
       hostname: '0.0.0.0',
       port: '3000',
@@ -33,6 +42,7 @@ export default defineConfig(({ command }) => {
       })
     ],
     build: {
+      chunkSizeWarningLimit: 1024,
       terserOptions: {
         compress: {
           drop_console: true,
