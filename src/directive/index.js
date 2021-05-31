@@ -1,4 +1,4 @@
-const preventRepeatClick = {
+const intervalClick = {
   mounted: (el, binding) => {
     el.addEventListener('click', () => {
       if (!el.disabled) {
@@ -11,4 +11,4 @@ const preventRepeatClick = {
   }
 }
 
-export { preventRepeatClick }
+export { intervalClick }

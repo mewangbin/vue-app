@@ -1,10 +1,9 @@
 export default [
   {
-    url: '/api/common/login/doLogin',
+    url: '/test',
     method: 'post',
     response: ({ body }) => {
-      console.log('body>>>>>>>>', body)
-      return { code: '120006', msg: '无效的账户数据!' }
+      return {}
     }
   }
 ]

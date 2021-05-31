@@ -1,3 +1,3 @@
-const TOKEN_KEY = 'token'
+const TOKEN_KEY = 'kthectoken'
 
 export { TOKEN_KEY }

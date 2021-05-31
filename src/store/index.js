@@ -1,12 +1,12 @@
 import { createStore } from 'vuex'
-import httpStore from './modules/httpStore'
-import userStore from './modules/userStore'
+import http from './modules/http'
+import user from './modules/user'
 
 const store = createStore({
   strict: process.env.NODE_ENV !== 'production',
   modules: {
-    httpStore: httpStore,
-    userStore: userStore
+    http: http,
+    user: user
   }
 })
 

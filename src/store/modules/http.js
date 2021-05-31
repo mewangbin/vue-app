@@ -1,13 +1,12 @@
-// payload:{key:xxx,cancel:xxx}
-
-const httpStore = {
+// 请求相关
+const http = {
   namespaced: true,
   state: () => ({
     requests: []
   }),
   mutations: {
-    push(state, payload) {
-      state.requests.push(payload)
+    add(state, request) {
+      state.requests.push(request)
     },
     remove(state, key) {
       let index = state.requests.findIndex((item) => item.key === key)
@@ -17,18 +16,16 @@ const httpStore = {
     },
     clear(state) {
       state.requests.forEach((item) => {
-        console.log('item:', item)
         console.log('取消')
         item.cancel('cancel')
       })
-      state.requests = []
+      state.requests.length = 0
     }
   },
-  actions: {},
   getters: {
-    get: (state) => (key) => {
+    getByKey: (state) => (key) => {
       return state.requests.find((item) => item.key === key)
     }
   }
 }
-export default httpStore
+export default http

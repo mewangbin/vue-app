@@ -18,8 +18,17 @@ export default defineConfig(({ command }) => {
     server: {
       hostname: '0.0.0.0',
       port: '3000',
-      open: true,
-      https: false
+      open: false,
+      https: false,
+      proxy: {
+        '^/api/.*': {
+          target: 'http://localhost:8190/',
+          ws: false,
+          secure: false,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, '')
+        }
+      }
     },
     plugins: [
       vue(),

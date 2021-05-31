@@ -6,7 +6,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'default',
-      component: () => import('../pages/Default.vue'),
+      component: () => import('../pages/home.vue'),
       meta: { requireAuth: true }
     },
     {
@@ -18,7 +18,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../pages/Login.vue'),
+      component: () => import('../pages/login.vue'),
       meta: { requireAuth: false }
     }
   ],
@@ -32,7 +32,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  store.commit('httpStore/clear')
+  store.commit('http/clear')
   if (to.matched.some((tmp) => tmp.meta.requireAuth)) {
     let token = store.getters['userStore/getToken']
     if (token) {

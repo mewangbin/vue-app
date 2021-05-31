@@ -9,7 +9,7 @@
           <el-input type="password" v-model="form.password" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="success" @click="submitForm()" v-preventRepeatClick>提交</el-button>
+          <el-button type="success" @click="submitForm()">提交</el-button>
           <el-button @click="resetForm()">重置</el-button>
         </el-form-item>
       </el-form>
@@ -20,25 +20,30 @@
 
 <script setup>
   import { reactive, ref } from '@vue/reactivity'
+  import { ElMessage } from 'element-plus'
   import { userApi } from '../api'
-
   const loginForm = ref(null)
   const form = reactive({
-    account: '',
+    branchId: '120159',
+    account: '120333',
     password: ''
   })
-
   const submitForm = () => {
     userApi
       .login(form)
-      .then((data) => {
-        console.log('loginResult:', data)
+      .then((result) => {
+        const { code, msg, data } = result
+        if (msg) {
+          ElMessage.info(msg)
+        }
+        console.log('code:', code)
+        console.log('msg:', msg)
+        console.log('data:', data)
       })
       .catch((e) => {
-        console.log('e:', e)
+        ElMessage.error(e.message)
       })
   }
-
   const resetForm = () => {
     loginForm.value.resetFields()
   }
